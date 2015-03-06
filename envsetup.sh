@@ -35,6 +35,7 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - repopick: Utility to fetch changes from Gerrit.
 - installboot: Installs a boot.img to the connected device.
 - installrecovery: Installs a recovery.img to the connected device.
+- sdkgen:   Create and add a custom sdk platform to your sdk directory from this source tree
 
 Environemnt options:
 - SANITIZE_HOST: Set to 'true' to use ASAN for all host modules. Note that
@@ -1798,6 +1799,10 @@ function installboot()
     else
         echo "The connected device does not appear to be $AOKP_BUILD, run away!"
     fi
+}
+
+function sdkgen() {
+        build/tools/customsdkgen.sh
 }
 
 function installrecovery()
