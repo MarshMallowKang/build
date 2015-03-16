@@ -85,12 +85,12 @@ function check_product()
     fi
 
     if (echo -n $1 | grep -q -e "^aokp_") ; then
-       AOKP_BUILD=$(echo -n $1 | sed -e 's/^aokp_//g')
-       export BUILD_NUMBER=$((date +%s%N ; echo $AOKP_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
+       AOKP_DEVICE=$(echo -n $1 | sed -e 's/^aokp_//g')
+       export BUILD_NUMBER=$((date +%s%N ; echo $AOKP_DEVICE; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
     else
-       AOKP_BUILD=
+       AOKP_DEVICE=
     fi
-    export AOKP_BUILD
+    export AOKP_DEVICE
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
