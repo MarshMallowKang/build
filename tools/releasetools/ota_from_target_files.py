@@ -620,19 +620,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   system_progress = 0.75
 
-  if OPTIONS.wipe_user_data:
-    system_progress -= 0.1
-  if HasVendorPartition(input_zip):
-    system_progress -= 0.1
-
-  script.AppendExtra("if is_mounted(\"/data\") then")
-  script.ValidateSignatures("data")
-  script.AppendExtra("else")
-  script.Mount("/data")
-  script.ValidateSignatures("data")
-  script.Unmount("/data")
-  script.AppendExtra("endif;")
-
   script.Print("******************************************");
   script.Print("*    ______  _____   __  __   _____      *");
   script.Print("*   /\\  _  \\/\\  __`\\/\\ \\/\\ \\ /\\  _ `\\    *");
@@ -664,6 +651,19 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("*   Device: %s (%s)"%(model, device));
   script.Print("******************************************");
 
+  if OPTIONS.wipe_user_data:
+    system_progress -= 0.1
+  if HasVendorPartition(input_zip):
+    system_progress -= 0.1
+
+  script.AppendExtra("if is_mounted(\"/data\") then")
+  script.ValidateSignatures("data")
+  script.AppendExtra("else")
+  script.Mount("/data")
+  script.ValidateSignatures("data")
+  script.Unmount("/data")
+  script.AppendExtra("endif;")
+
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
@@ -682,13 +682,10 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     system_diff = common.BlockDifference("system", system_tgt, src=None)
     system_diff.WriteScript(script, output_zip)
   else:
-    script.Print("Formating System...")
     script.FormatPartition("/system")
-    script.Print("Mounting System...")
     script.Mount("/system", recovery_mount_options)
     if not has_recovery_patch:
       script.UnpackPackageDir("recovery", "/system")
-    script.Print("Installing System...")
     script.UnpackPackageDir("system", "/system")
 
     symlinks = CopyPartitionFiles(system_items, input_zip, output_zip)
@@ -737,7 +734,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.ShowProgress(0.02, 10)
     if block_based:
       script.Mount("/system")
-      script.RunBackup("restore")
+    script.RunBackup("restore")
     if block_based:
       script.Unmount("/system")
 
@@ -747,8 +744,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
                    ""+input_zip.read("SYSTEM/addon.d/UPDATE-SuperSU.zip"))
     script.Mount("/system")
     script.FlashSuperSU()
-  if block_based:
-    script.Unmount("/system")
 
   script.ShowProgress(0.05, 5)
   script.WriteRawImage("/boot", "boot.img")
